@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +28,7 @@ SECRET_KEY = '5u)impadejqu7nskq&e5%-@v1=49q)ehon8*7-%lt**aa!bl6)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['46.101.198.105', 'localhost', '0.0.0.0', '127.0.0.1:8080', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'background_task',
     'app',
 ]
 
@@ -73,11 +77,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('RDS_DATABASE_NAME'),
+        'USER': os.environ.get('RDS_DATABASE_USER'),
+        'PASSWORD': os.environ.get('RDS_DATABASE_PASSWORD'),
+        'HOST': os.environ.get('RDS_DATABASE_HOST'),
+        'PORT': '5432'
     }
 }
 

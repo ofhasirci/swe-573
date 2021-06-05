@@ -1,2 +1,10 @@
 Django>=3.0,<4.0
 python-dotenv
+biopython
+Wikidata
+psycopg2
+djangorestframework
+djangorestframework-jwt
+xmltodict
+requests
+django-background-tasks==1.2.5
