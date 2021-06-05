@@ -61,8 +61,11 @@ def getArticle(term):
                 elif type(abstract_text) is collections.OrderedDict:
                     abstract += abstract_text.get('#text')
         
+        try:
+            authors = article.get('MedlineCitation').get('Article').get('AuthorList')
+        except AttributeError:
+            pass
         author_list = []
-        authors = article.get('MedlineCitation').get('Article').get('AuthorList')
         if authors:
             for item in authors.get('Author'):
                 try:
@@ -72,8 +75,11 @@ def getArticle(term):
                 except AttributeError:
                     pass
         
+        try:
+            keywords = article.get('MedlineCitation').get('KeywordList')
+        except AttributeError:
+            pass
         keyword_list = []
-        keywords = article.get('MedlineCitation').get('KeywordList')
         if keywords:
             for item in keywords.get('Keyword'):
                 try:
