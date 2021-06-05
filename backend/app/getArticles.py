@@ -37,7 +37,11 @@ def getArticle(term):
         except AttributeError:
             pass
         
-        abs_dict = article.get('MedlineCitation').get('Article').get('Abstract')
+        try:
+            abs_dict = article.get('MedlineCitation').get('Article').get('Abstract')
+        except AttributeError:
+            pass
+        
         abstract = ''
         if abs_dict:
             abstract_text = abs_dict.get('AbstractText')
