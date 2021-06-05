@@ -27,7 +27,10 @@ def getArticle(term):
         article = articles.get('PubmedArticleSet').get('PubmedArticle')
         article_handle.close()
 
-        pmid = article.get('MedlineCitation').get('PMID').get('#text')
+        try:
+            pmid = article.get('MedlineCitation').get('PMID').get('#text')
+        except AttributeError:
+            pass
         title = article.get('MedlineCitation').get('Article').get('ArticleTitle')
         abs_dict = article.get('MedlineCitation').get('Article').get('Abstract')
         abstract = ''
