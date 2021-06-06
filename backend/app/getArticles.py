@@ -69,10 +69,12 @@ def getArticle(term):
         if authors:
             for item in authors.get('Author'):
                 try:
-                    if item.get('Initials') and item.get('LastName'):
+                    if item.get('LastName') and item.get('ForeName'):
                         author = item.get('LastName') + " " + item.get('ForeName')
                         author_list.append(author)
                 except AttributeError:
+                    pass
+                except TypeError:
                     pass
         
         try:
