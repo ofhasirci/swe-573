@@ -30,7 +30,7 @@ export function HomePage() {
 
   const getArticles = () => {
     if (searchValues.length === 0) return;
-    axios.post("http://3.68.69.151:8080/search", {
+    axios.post("http://localhost:8080/search", {
       terms: searchValues,
       offset: 0,
       count: 10
@@ -55,7 +55,7 @@ export function HomePage() {
 
   const changePage = (page, pageSize) => {
     console.log(page);
-    axios.post("http://3.68.69.151:8080/pagination", {
+    axios.post("http://localhost:8080/pagination", {
       offset: page-1,
       count: 10,
       class_no: classNumber
