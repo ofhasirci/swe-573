@@ -27,7 +27,7 @@ export function Article(props) {
 
     const saveTags = () => {
         console.log(tags);
-        axios.post("http://localhost:8080/saveTags", {
+        axios.post("http://3.68.69.151:8080/saveTags", {
             pmid: props.article.PMID,
             tags: tags
         }).then(res => {

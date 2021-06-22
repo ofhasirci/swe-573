@@ -54,7 +54,7 @@ def search(request):
         serializer = ArticleSerializer(articles, many=True)
         resp = {
             'articles': serializer.data[offset:count],
-            'ldaUrl': "http://localhost:8080/static/lda_model.html",
+            'ldaUrl': "http://3.68.69.151:8080/static/lda_model.html",
             'numOfArticle': len(serializer.data),
             'classNumber': class_number
         }

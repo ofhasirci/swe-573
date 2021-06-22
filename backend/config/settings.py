@@ -28,7 +28,7 @@ SECRET_KEY = '5u)impadejqu7nskq&e5%-@v1=49q)ehon8*7-%lt**aa!bl6)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['46.101.198.105', 'localhost', '0.0.0.0', '127.0.0.1:8080', '127.0.0.1']
+ALLOWED_HOSTS = ['3.68.69.151', '46.101.198.105', 'localhost', '0.0.0.0', '127.0.0.1:8080', '127.0.0.1']
 
 
 # Application definition
@@ -59,7 +59,8 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://3.68.69.151:3000"
 ]
 
 ROOT_URLCONF = 'config.urls'

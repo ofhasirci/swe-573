@@ -13,8 +13,6 @@ function App() {
           <div className="logo" />
           <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
             <Menu.Item key="1">Search</Menu.Item>
-            <Menu.Item key="2">nav 2</Menu.Item>
-            <Menu.Item key="3">nav 3</Menu.Item>
           </Menu>
         </Header>
           <Content style={{ padding: '0 50px' }}>
