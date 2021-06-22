@@ -1,0 +1,12 @@
+psycopg2
+nmslib==2.1.1
+numpy
+requests
+pyldavis
+gensim
+spacy>=3.0.6,<3.1.0
+wordcloud
+pandas==1.2.4
+SQLAlchemy==1.4.17
+nltk==3.6.2
+scispacy

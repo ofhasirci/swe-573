@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+psycopg2 = "*"
+nmslib = "==2.1.1"
+numpy = "*"
+requests = "*"
+gensim = "*"
+spacy = ">=3.0.6,<3.1.0"
+wordcloud = "*"
+pandas = "==1.2.4"
+nltk = "==3.6.2"
+scispacy = "*"
+pyLDAvis = "*"
+SQLAlchemy = "==1.4.17"
+jupyter = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
