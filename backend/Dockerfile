@@ -7,7 +7,4 @@ RUN pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.4
 RUN ls /app/
 COPY . /app/
 
-RUN python manage.py makemigrations
-RUN python manage.py migrate
-
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]

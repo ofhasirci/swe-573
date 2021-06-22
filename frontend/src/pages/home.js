@@ -1,66 +1,117 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from 'axios';
-import { Select } from "antd";
-import WBK from 'wikibase-sdk'
+import Iframe from 'react-iframe'
+import { Row, Col, Button, Divider, Pagination } from "antd";
+import { Tag } from "../component/tag";
+import { Article } from "../component/article";
 
-const { Option } = Select;
-
-const wbk = WBK({
-  instance: 'https://www.wikidata.org',
-  sparqlEndpoint: 'https://query.wikidata.org/sparql' // Required to use `sparqlQuery` and `getReverseClaims` functions, optional otherwise
-})
-
-const initialState = [];
 
 export function HomePage() {
-  const [wikis, setWikis] = useState(initialState);
+  const [articles, setArticles] = useState([]);
+  const [ldaUrl, setLdaurl] = useState(null);
+  const [numOfArticle, setNumOfArticle] = useState(null);
+  const [classNumber, setClassNumber] = useState(null);
 
   let searchValues = [];
 
-  const onSearch = value => {
+  const onSelect = value => {
     console.log(value);
-    if(!value && value === "") return;
-    let url = wbk.searchEntities({
-      search: value,
-      format: 'json',
-      limit: 10,
-      language: 'en'
-    });
-    console.log("url: " + url)
-    let options = []
-    setWikis(initialState)
-    axios.get(url)
-        .then(res => {
-          console.log(res.data.search[0]);
-          res.data.search.map(item => options.push({id: item.id, description: item.description}))
-          // <Option key={item.id}>{item.description}</Option>
-          setWikis(options)
-        })
-        .catch((error) => {
-          console.log(error)
-        });
+    let res = value.split(':');
+    searchValues.push(res[0]);
   }
 
-  useEffect(() => {
-    console.log("wikis:")
-    console.log(wikis);
-  }, [wikis]);
+  const onDeselect = value => {
+    console.log(value);
+    let res = value.split(':');
+    searchValues = searchValues.filter((value, index, arr) => {
+      return value !== res[0];
+    });
+  }
+
+  const getArticles = () => {
+    if (searchValues.length === 0) return;
+    axios.post("http://localhost:8080/search", {
+      terms: searchValues,
+      offset: 0,
+      count: 10
+    }).then(res => {
+      console.log(res.data.articles[9].Tags);
+      setArticles(res.data.articles);
+      setLdaurl(res.data.ldaUrl);
+      setNumOfArticle(res.data.numOfArticle);
+      setClassNumber(res.data.classNumber);
+    }).catch((error) => {
+        console.log(error)
+    });
+  }
+
+  const clearPage = () => {
+    setArticles([]);
+    setLdaurl(null);
+    setNumOfArticle(null);
+    setClassNumber(null)
+    searchValues = [];
+  }
+
+  const changePage = (page, pageSize) => {
+    console.log(page);
+    axios.post("http://localhost:8080/pagination", {
+      offset: page-1,
+      count: 10,
+      class_no: classNumber
+    }).then(res => {
+      setArticles(res.data);
+    }).catch((error) => {
+      console.log(error)
+    });
+  }
 
   return (
     <div>
-      <Select
-        mode="multiple"
-        allowClear={true}
-        autoFocus={true}
-        autoClearSearchValue={false}
-        style={{ width: '100%' }}
-        placeholder="Please select"
-        defaultValue={searchValues}
-        onSearch={onSearch}
-      >
-        {wikis.map(item => 
-          <Option key={item.id}>{item.description}</Option>)}
-      </Select>
+      <Tag onSelect={onSelect} onDeselect={onDeselect}/>
+      <Row>
+        <Col span={8}/>
+        <Col span={8}>
+          <Button type="primary" onClick={getArticles}>Bring Articles</Button>
+          <Divider type="vertical"/>
+          <Button type="primary" onClick={clearPage}>Clear</Button>
+        </Col>
+      </Row>
+      <Divider />
+      <Row>
+        <Col span={2}></Col>
+        <Col span={8}>
+          {ldaUrl && 
+          <Iframe url={ldaUrl} width="900px" height="1000px" />
+          }
+        </Col>
+      </Row>
+      <Divider />
+      <Row>
+        {numOfArticle && 
+          <div>
+            <p>Number of articles on this topics: {numOfArticle}</p>
+            <br/>
+            {classNumber && <p>Class number of articles: {classNumber + 1}</p>}
+          </div>}
+      </Row>
+      <Divider />
+      <Row>
+        <Col span={24}>
+          {articles.length > 0 &&
+            articles.map((value, index, arr) => {
+              return <Article key={value.PMID} article={value} />
+            }) 
+          }
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          {numOfArticle && 
+            <Pagination total={numOfArticle} onChange={changePage}/>
+          }
+        </Col>
+      </Row>
     </div>
   );
 }

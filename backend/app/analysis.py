@@ -19,8 +19,15 @@ from background_task import background
 from django.conf import settings
 import os
 
+NUM_TOPICS = 25
+
 # lda_model path
-LDA_MODEL_PATH = datapath(os.path.join(settings.BASE_DIR, "\\app\\lda_model\\lda_model"))
+MODEL_PATH = "/app/app/lda_model/"
+LDA_MODEL_PATH = MODEL_PATH + "lda_model"
+WORD_DICT_PATH = MODEL_PATH + "word_dictionart"
+
+id2word = corpora.Dictionary.load_from_text(WORD_DICT_PATH)
+lda_model = gensim.models.ldamodel.LdaModel.load(LDA_MODEL_PATH)
 
 # nltk stopwords
 nltk.download('stopwords')
@@ -29,6 +36,8 @@ from nltk.corpus import stopwords
 stop_words = stopwords.words('english')
 stop_words.extend(['background', 'methods', 'introduction', 'conclusions', 'results', 
                 'purpose', 'materials', 'discussions','methodology', 'abstract', 'section', 'text'])
+
+nlp = spacy.load('en_core_sci_sm', disable=['parser', 'ner'])
 
 @background(schedule=5)
 def tokenize():
@@ -62,15 +71,39 @@ def tokenize():
     data.to_sql('app_cleanarticle', con=cnx, if_exists='replace', index=False)
 
 
-def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
-    nlp = spacy.load('en_core_sci_sm', disable=['parser', 'ner'])
+def lda_to_output_labels(lda_result, class_count):
+    """ 
+    This function returns the output vector of a given LDA result
+    For class count of 10 for example, (3, 0.97) becomes [0, 0, 0, 0.97, 0, 0, 0, 0, 0, 0]
+    """
+    output = np.zeros(class_count)
+    for res in lda_result:
+        output[res[0]] = res[1]
+    return output
+
+
+def lemmatization(tokens, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
 
     """https://spacy.io/api/annotation"""
-    texts_out = []
-    for sent in texts:
-        doc = nlp(" ".join(sent))
-        texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
-    return texts_out
+    doc = nlp(" ".join(tokens))
+    return [token.lemma_ for token in doc if token.pos_ in allowed_postags]
 
-def analyze(sentences):
-    lda_model = gensim.models.ldamodel.LdaModel.load(LDA_MODEL_PATH)
+def analyze(sentence):
+    # tokenize sentence
+    tokenized_words = gensim.utils.simple_preprocess(str(sentence), deacc=True)
+
+    # remove stop words
+    clean_words = [word for word in simple_preprocess(str(tokenized_words)) if word not in stop_words]
+
+    tokens = [word for word in clean_words if word in id2word.token2id.keys()]
+    
+    # lemmatize clean worlds
+    data_lemmatized = lemmatization(tokens, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
+    print("tokens:")
+    print(data_lemmatized)
+    
+    corpus = id2word.doc2bow(data_lemmatized)
+    lda_output = lda_to_output_labels(lda_model[corpus][0], NUM_TOPICS)
+    class_number = np.argmax(lda_output)
+    print("class number" + str(class_number))
+    return class_number

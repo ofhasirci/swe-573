@@ -23,6 +23,8 @@ class CleanArticle(models.Model):
     Keywords = ArrayField(models.CharField(max_length=40, blank=True))
     Tokenized = ArrayField(models.CharField(max_length=5000, blank=True), null=True)
     TopicClass = models.IntegerField(default=0)
+    ClassValue = models.FloatField(default=0)
+    Tags = ArrayField(models.CharField(max_length=750, blank=True), null=True)
 
     def __str__(self):
         return self.PMID
